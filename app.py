@@ -1,8 +1,3 @@
-agram"))
-
-    # Render HTML form
-    return render_template_string(HTML_TEMPLATE)
-
 from flask import Flask, request, render_template_string, redirect, flash
 import requests
 import time
