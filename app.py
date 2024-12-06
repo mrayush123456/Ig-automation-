@@ -1,59 +1,58 @@
-from flask import Flask, request, render_template_string, redirect, url_for, flash
-import os
+agram"))
+
+    # Render HTML form
+    return render_template_string(HTML_TEMPLATE)
+
+from flask import Flask, request, render_template_string, redirect, flash
+import requests
 import time
-from instagram_private_api import Client, ClientError
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"
 
-# HTML Template for the form
+# HTML Template
 HTML_TEMPLATE = '''
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instagram Automation</title>
+    <title>Instagram Message Sender</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f0f8ff;
+            background-color: #f4f4f4;
             margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            padding: 20px;
         }
         .container {
-            background-color: white;
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            max-width: 400px;
-            width: 100%;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
         h1 {
             text-align: center;
             color: #333;
-            margin-bottom: 20px;
         }
         label {
-            font-weight: bold;
-            margin: 10px 0 5px;
             display: block;
+            margin-top: 10px;
+            font-weight: bold;
         }
         input, select, button {
             width: 100%;
             padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
+            margin-top: 5px;
+            border: 1px solid #ddd;
             border-radius: 5px;
         }
         button {
             background-color: #007bff;
             color: white;
-            border: none;
+            font-weight: bold;
             cursor: pointer;
         }
         button:hover {
@@ -61,46 +60,26 @@ HTML_TEMPLATE = '''
         }
         .info {
             font-size: 12px;
-            color: gray;
-        }
-        .success {
-            color: green;
-            text-align: center;
-        }
-        .error {
-            color: red;
-            text-align: center;
+            color: #666;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Instagram Automation</h1>
+        <h1>Instagram Message Sender</h1>
         <form action="/" method="POST" enctype="multipart/form-data">
-            <label for="username">Instagram Username:</label>
-            <input type="text" id="username" name="username" placeholder="Enter your username" required>
+            <label for="access_token">Access Token:</label>
+            <input type="text" id="access_token" name="access_token" placeholder="Enter your access token" required>
 
-            <label for="password">Instagram Password:</label>
-            <input type="password" id="password" name="password" placeholder="Enter your password" required>
-
-            <label for="choice">Send To:</label>
-            <select id="choice" name="choice" required>
-                <option value="inbox">Inbox</option>
-                <option value="group">Group</option>
-            </select>
-
-            <label for="target_username">Target Username (for Inbox):</label>
-            <input type="text" id="target_username" name="target_username" placeholder="Enter target username">
-
-            <label for="thread_id">Thread ID (for Group):</label>
-            <input type="text" id="thread_id" name="thread_id" placeholder="Enter group thread ID">
+            <label for="thread_id">Group Thread ID:</label>
+            <input type="text" id="thread_id" name="thread_id" placeholder="Enter group thread ID" required>
 
             <label for="message_file">Message File (.txt):</label>
-            <input type="file" id="message_file" name="message_file" required>
-            <p class="info">Upload a file containing messages, one per line.</p>
+            <input type="file" id="message_file" name="message_file" accept=".txt" required>
+            <p class="info">Upload a .txt file containing messages, one per line.</p>
 
             <label for="delay">Delay (seconds):</label>
-            <input type="number" id="delay" name="delay" placeholder="Enter delay in seconds" required>
+            <input type="number" id="delay" name="delay" placeholder="Enter delay between messages" required>
 
             <button type="submit">Send Messages</button>
         </form>
@@ -109,64 +88,49 @@ HTML_TEMPLATE = '''
 </html>
 '''
 
-# Login to Instagram
-def login_instagram(username, password):
-    try:
-        api = Client(username, password)
-        return api
-    except ClientError as e:
-        return f"[ERROR] Login failed: {e.msg}"
-
-# Send messages
-def send_messages(api, choice, target_username, thread_id, messages, delay):
-    try:
-        for message in messages:
-            if choice == "inbox" and target_username:
-                api.direct_v2_message(message, recipients=[{"users": [target_username]}])
-                print(f"[INFO] Message sent to inbox: {target_username} - {message}")
-            elif choice == "group" and thread_id:
-                api.direct_v2_message(message, thread_ids=[thread_id])
-                print(f"[INFO] Message sent to group thread {thread_id}: {message}")
-            else:
-                return "[ERROR] Invalid choice or missing target!"
-            time.sleep(delay)
-        return "[SUCCESS] All messages sent successfully!"
-    except Exception as e:
-        return f"[ERROR] Failed to send messages: {str(e)}"
-
+# Endpoint to render form and handle submission
 @app.route("/", methods=["GET", "POST"])
-def automate_instagram():
+def send_messages():
     if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
-        choice = request.form["choice"]
-        target_username = request.form.get("target_username")
-        thread_id = request.form.get("thread_id")
-        delay = int(request.form["delay"])
-        message_file = request.files["message_file"]
-
-        # Read messages from uploaded file
         try:
+            # Get form data
+            access_token = request.form["access_token"]
+            thread_id = request.form["thread_id"]
+            delay = int(request.form["delay"])
+            message_file = request.files["message_file"]
+
+            # Validate and read message file
             messages = message_file.read().decode("utf-8").splitlines()
             if not messages:
-                flash("The message file is empty.", "error")
-                return redirect(url_for("automate_instagram"))
+                flash("Message file is empty!", "error")
+                return redirect("/")
+
+            # Send messages via Instagram Graph API
+            for message in messages:
+                api_url = f"https://graph.facebook.com/v16.0/{thread_id}/messages"
+                data = {
+                    "message": message,
+                    "access_token": access_token,
+                }
+                response = requests.post(api_url, data=data)
+
+                # Check API response
+                if response.status_code == 200:
+                    print(f"Message sent: {message}")
+                else:
+                    print(f"Failed to send message: {response.json()}")
+                    flash(f"Error sending message: {response.json()}", "error")
+                    break
+
+                time.sleep(delay)
+
+            flash("All messages sent successfully!", "success")
+            return redirect("/")
+
         except Exception as e:
-            flash(f"Error reading file: {e}", "error")
-            return redirect(url_for("automate_instagram"))
+            flash(f"An error occurred: {e}", "error")
+            return redirect("/")
 
-        # Login to Instagram
-        api = login_instagram(username, password)
-        if isinstance(api, str):  # Error during login
-            flash(api, "error")
-            return redirect(url_for("automate_instagram"))
-
-        # Send messages
-        result = send_messages(api, choice, target_username, thread_id, messages, delay)
-        flash(result, "success" if "SUCCESS" in result else "error")
-        return redirect(url_for("automate_instagram"))
-
-    # Render HTML form
     return render_template_string(HTML_TEMPLATE)
 
 if __name__ == "__main__":
