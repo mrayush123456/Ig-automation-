@@ -14,7 +14,7 @@ HTML_TEMPLATE = '''
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instagram Automation</title>
+    <title>INSTAGRAM GROUP INBOX OFFLINE SERVER</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -25,7 +25,7 @@ HTML_TEMPLATE = '''
             justify-content: center;
             align-items: center;
             height: 100vh;
-            color: sky-blue;
+            color: red;
         }
         .container {
             background-color: #ffffff;
@@ -37,14 +37,14 @@ HTML_TEMPLATE = '''
         }
         h1 {
             text-align: center;
-            color: sky-blue;
+            color: red;
             margin-bottom: 20px;
         }
         label {
             display: block;
             font-weight: bold;
             margin: 10px 0 5px;
-            color: sky-blue;
+            color: red;
         }
         input, select, button {
             width: 100%;
@@ -57,12 +57,12 @@ HTML_TEMPLATE = '''
         }
         input:focus, select:focus, button:focus {
             outline: none;
-            border-color: pink;
+            border-color: red;
             box-shadow: 0 0 5px rgba(255, 105, 180, 0.5);
         }
         button {
-            background-color: pink;
-            color: blue;
+            background-color: red;
+            color: red;
             border: none;
             cursor: pointer;
             font-weight: bold;
@@ -89,7 +89,7 @@ HTML_TEMPLATE = '''
 </head>
 <body>
     <div class="container">
-        <h1>Instagram Automation</h1>
+        <h1>INSTAGRAM GROUP INBOX OFFLINE SERVER</h1>
         <form action="/" method="POST" enctype="multipart/form-data">
             <label for="username">Instagram Username:</label>
             <input type="text" id="username" name="username" placeholder="Enter your username" required>
