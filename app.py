@@ -53,7 +53,7 @@ HTML_TEMPLATE = '''
             border: 1px solid #ccc;
             border-radius: 5px;
             font-size: 16px;
-            background-color: black;
+            background-color: white;
         }
         input:focus, select:focus, button:focus {
             outline: none;
