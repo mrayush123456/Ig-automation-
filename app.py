@@ -62,7 +62,7 @@ HTML_TEMPLATE = '''
         }
         button {
             background-color: black;
-            color: black;
+            color: red;
             border: none;
             cursor: pointer;
             font-weight: bold;
