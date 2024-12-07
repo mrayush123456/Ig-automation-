@@ -37,7 +37,7 @@ HTML_TEMPLATE = '''
         }
         h1 {
             text-align: center;
-            color: white;
+            color: red;
             margin-bottom: 20px;
         }
         label {
