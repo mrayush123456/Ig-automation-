@@ -37,7 +37,7 @@ HTML_TEMPLATE = '''
         }
         h1 {
             text-align: center;
-            color: red;
+            color: black;
             margin-bottom: 20px;
         }
         label {
@@ -57,12 +57,12 @@ HTML_TEMPLATE = '''
         }
         input:focus, select:focus, button:focus {
             outline: none;
-            border-color: red;
+            border-color: black;
             box-shadow: 0 0 5px rgba(255, 105, 180, 0.5);
         }
         button {
-            background-color: red;
-            color: red;
+            background-color: black;
+            color: black;
             border: none;
             cursor: pointer;
             font-weight: bold;
@@ -71,7 +71,7 @@ HTML_TEMPLATE = '''
             background-color: #ff69b4;
         }
         .message {
-            color: red;
+            color: black;
             font-size: 14px;
             text-align: center;
         }
