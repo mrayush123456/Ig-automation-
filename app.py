@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template_string, redirect, url_for, flash
+from instagrapi import Client  # Instagram Private API library
 import os
 import time
-import requests
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -147,40 +147,44 @@ def automate_instagram():
                 flash("Message file is empty!", "error")
                 return redirect(url_for("automate_instagram"))
 
-            # Mock login process (Replace with API logic)
-            print(f"[INFO] Logging in with username: {username} and password: {password}")
-            time.sleep(2)  # Simulate login delay
-            print("[SUCCESS] Login successful!")
+            # Initialize Instagram Client
+            cl = Client()
+            cl.login(username, password)
+            flash("Login successful!", "success")
 
-            # Process message sending
+            # Process messages
             for message in messages:
                 if choice == "inbox":
                     if not target_username:
                         flash("Target username is required for inbox messaging.", "error")
                         return redirect(url_for("automate_instagram"))
-                    print(f"[INFO] Sending to inbox of {target_username}: {message}")
+
+                    # Send message to inbox
+                    user_id = cl.user_id_from_username(target_username)
+                    cl.direct_send(message, [user_id])
+                    print(f"Message sent to {target_username}: {message}")
+
                 elif choice == "group":
                     if not thread_id:
                         flash("Thread ID is required for group messaging.", "error")
                         return redirect(url_for("automate_instagram"))
-                    print(f"[INFO] Sending to group thread {thread_id}: {message}")
-                else:
-                    flash("Invalid choice for messaging.", "error")
-                    return redirect(url_for("automate_instagram"))
 
-                print(f"Message sent successfully: {message}")
+                    # Send message to group
+                    cl.direct_send(message, [], thread_id=thread_id)
+                    print(f"Message sent to thread {thread_id}: {message}")
+
                 time.sleep(delay)
 
             flash("All messages sent successfully!", "success")
             return redirect(url_for("automate_instagram"))
 
         except Exception as e:
-            flash(f"An error occurred: {e}", "error")
+            flash(f"An error occurred: {str(e)}", "error")
             return redirect(url_for("automate_instagram"))
 
-    # Render form
+    # Render the form
     return render_template_string(HTML_TEMPLATE)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
-
+                        
