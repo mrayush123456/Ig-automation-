@@ -71,7 +71,7 @@ HTML_TEMPLATE = '''
             background-color: #ff69b4;
         }
         .message {
-            color: black;
+            color: white;
             font-size: 14px;
             text-align: center;
         }
