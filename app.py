@@ -18,14 +18,14 @@ HTML_TEMPLATE = '''
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: blue;
+            background-color: red;
             margin: 0;
             padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            color: pink;
+            color: sky-blue;
         }
         .container {
             background-color: #ffffff;
@@ -37,14 +37,14 @@ HTML_TEMPLATE = '''
         }
         h1 {
             text-align: center;
-            color: pink;
+            color: sky-blue;
             margin-bottom: 20px;
         }
         label {
             display: block;
             font-weight: bold;
             margin: 10px 0 5px;
-            color: pink;
+            color: sky-blue;
         }
         input, select, button {
             width: 100%;
